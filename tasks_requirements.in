@@ -1,0 +1,11 @@
+# task processing
+pyzmq
+
+# pdf render
+pdf2image
+
+# settings
+python-dotenv
+
+# tests
+pytest

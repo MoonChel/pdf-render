@@ -1,0 +1,20 @@
+# db
+alembic
+sqlalchemy
+asyncpg
+
+# async tasks
+pyzmq
+
+# web
+fastapi
+uvicorn
+python-multipart
+aiofiles
+pydantic
+
+# settings
+python-dotenv
+
+# tests
+pytest
