@@ -12,4 +12,3 @@ RUN pip install --no-cache-dir -r requirements.in -r tasks_requirements.in
 COPY . /app
 
 EXPOSE 8000
-EXPOSE 5555
