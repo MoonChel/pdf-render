@@ -21,7 +21,7 @@ services:
       context: .
     environment:
       - DATABASE_HOST=db
-      - SOCKET_URL=tcp://server:3000
+      - SOCKET_HOST=server
     command: uvicorn run:app
     ports:
       - "8000:8000"
@@ -37,7 +37,7 @@ services:
       - "5555:5555"
     environment:
       - DATABASE_HOST=db
-      - SOCKET_URL=tcp://*:3000
+      - SOCKET_HOST=*
     volumes:
       - ./files:/app/files
       - ./images:/app/images
