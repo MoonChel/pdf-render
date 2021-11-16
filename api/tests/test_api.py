@@ -1,15 +1,23 @@
 import pytest
 from io import TextIOWrapper
 from httpx import AsyncClient, Request
-from models.models import File as FileModel
+from api.models.models import File as FileModel
 
 
-@pytest.mark.anyio
+async def mock_zmq():
+    return "mock"
+
+
+@pytest.mark.asyncio
 async def test_handlers(
     test_client: AsyncClient,
     pdf_test_file: TextIOWrapper,
     pdf_db_file: FileModel,
+    mocker,
 ):
+    mocker.patch("api.zmq_sender.zmq_client.send_string", return_value=mock_zmq())
+    mocker.patch("api.zmq_sender.zmq_client.recv_string", return_value=mock_zmq())
+
     document_id = pdf_db_file.id
 
     endpoints = [

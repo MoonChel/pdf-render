@@ -5,6 +5,8 @@ WORKDIR /app
 
 ENV PYTHONUNBUFFERED = 1
 
+RUN apt-get update
+RUN apt-get install poppler-utils -y
 COPY *requirements.in /app/
 
 RUN pip install --no-cache-dir -r requirements.in -r tasks_requirements.in

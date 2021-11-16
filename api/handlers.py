@@ -2,19 +2,18 @@ from uuid import UUID
 from typing import Optional
 from fastapi import APIRouter, UploadFile, File
 
-from models.models import File as FileModel, Image as ImageModel
-from models.session import session_manager
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
 from .utils import save_file
-from .data_models import UploadDocumentResponse
 from .zmq_sender import zmq_client
+from .models.models import File as FileModel
+from .models.session import session_manager
 
 api = APIRouter(prefix="/api")
 
 
-@api.post("/document", response_model=UploadDocumentResponse)
+@api.post("/document")
 async def document_upload(file: Optional[UploadFile] = File("file")):
     # save on disk
     filename = await save_file(file)
@@ -25,9 +24,15 @@ async def document_upload(file: Optional[UploadFile] = File("file")):
     await session_manager.session.commit()
 
     # send for processing
-    # zmq_client.send(db_file.id)
+    await zmq_client.send_string(str(db_file.id))
+    recieved = await zmq_client.recv_string()
 
-    return UploadDocumentResponse(file_id=db_file.id, name=filename)
+    return {
+        "name": filename,
+        "file_id": db_file.id,
+        # "in_progress": True,
+        "in_progress": bool(recieved),
+    }
 
 
 @api.get("/document/{document_id}")
@@ -36,9 +41,7 @@ async def get_document(document_id: UUID):
         select(FileModel).where(FileModel.id == document_id)
     )
 
-    db_file = result.first()
-    if db_file:
-        (db_file,) = db_file
+    (db_file,) = result.first()
 
     return {
         "id": db_file.id,
@@ -55,9 +58,7 @@ async def get_images(document_id: UUID):
         .where(FileModel.id == document_id)
     )
 
-    db_file = result.first()
-    if db_file:
-        (db_file,) = db_file
+    (db_file,) = result.first()
 
     return [
         {

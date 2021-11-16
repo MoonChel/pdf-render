@@ -1,32 +1,42 @@
 import os
 import pytest
 import asyncio
-from fastapi.testclient import TestClient
-
 from httpx import AsyncClient
 
 from api.app import app
 from api.settings import _current_dir
 
-from models.settings import DATABASE_HOST
-from models.session import engine, session_maker
-from models.models import Base, File as FileModel
+from api.models.session import engine, session_maker
+from api.models.models import Base, File as FileModel
+from api.settings import DATABASE_HOST
+
+
+@pytest.fixture(scope="session")
+def event_loop():
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+
+    yield loop
+
+    loop.close()
 
 
 @pytest.fixture
-def anyio_backend():
-    return "asyncio"
+async def session(event_loop):
+    async with session_maker() as session:
+        yield session
 
 
 @pytest.fixture(autouse=True)
-async def prepare_db():
+async def prepare_db(event_loop):
     if DATABASE_HOST not in [
         "localhost",
         "postgres",
         "0.0.0.0",
-        # "test_db",
+        "test_db",
     ]:
-        raise Exception("Tests must run on 'test' database")
+        raise Exception(
+            f"Tests must run on 'test' database, instead of '{DATABASE_HOST}'"
+        )
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -34,20 +44,19 @@ async def prepare_db():
 
 
 @pytest.fixture
-async def pdf_db_file():
-    async with session_maker() as session:
-        db_file = FileModel(name="test_file.pdf")
-        session.add(db_file)
-        await session.commit()
+async def pdf_db_file(session):
+    db_file = FileModel(name="pdf-test.pdf")
+    session.add(db_file)
+    await session.commit()
 
-        yield db_file
+    yield db_file
 
-        await session.delete(db_file)
-        await session.commit()
+    await session.delete(db_file)
+    await session.commit()
 
 
 @pytest.fixture
-async def test_client():
+async def test_client(event_loop):
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
 

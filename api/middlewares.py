@@ -1,5 +1,5 @@
 from fastapi import Request, FastAPI
-from models.session import session_maker, session_manager, shutdown_db
+from .models.session import session_maker, session_manager, shutdown_db
 
 
 def init_db(app: FastAPI):

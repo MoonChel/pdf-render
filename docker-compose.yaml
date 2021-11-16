@@ -11,17 +11,6 @@ services:
       # test db is running on different port
       - 5434:5432
 
-  test_api:
-    build:
-      context: .
-    environment:
-      - DATABASE_HOST=test_db
-      - SOCKET_HOST=worker
-    command: pytest
-    volumes:
-      - ./files:/app/files
-      - ./images:/app/images
-
   db:
     image: "postgres:12-alpine"
     env_file:
@@ -29,21 +18,13 @@ services:
     ports:
       - 5432:5432
 
-  migrate:
-    restart: on-failure
-    build:
-      context: .
-    environment:
-      - DATABASE_HOST=db
-    command: alembic upgrade head
-
   api:
     build:
       context: .
     environment:
       - DATABASE_HOST=db
       - SOCKET_HOST=worker
-    command: uvicorn run:app --host=*
+    command: uvicorn run:app --host=0.0.0.0
     ports:
       - 8000:8000
     volumes:
@@ -53,10 +34,9 @@ services:
   worker:
     build:
       context: .
-    command: python run_tasks.py
+    command: python run_worker.py
     environment:
       - DATABASE_HOST=db
-      - SOCKET_HOST=*
     volumes:
       - ./files:/app/files
       - ./images:/app/images

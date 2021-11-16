@@ -20,7 +20,7 @@ python-dotenv
 pytest
 requests
 httpx
-anyio
 pytest-vcr
 pytest-env
 pytest-asyncio
+pytest-mock
