@@ -1,7 +1,7 @@
 import pytest
 from io import TextIOWrapper
 from httpx import AsyncClient, Request
-from api.models.models import File as FileModel
+from models.models import File as FileModel
 
 
 async def mock_zmq():

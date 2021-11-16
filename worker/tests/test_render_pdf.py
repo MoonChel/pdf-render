@@ -4,8 +4,8 @@ import asyncio
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
-from api.models.session import session_maker
-from api.models.models import File as FileModel
+from models.session import session_maker
+from models.models import File as FileModel
 
 from worker.settings import _current_dir
 from worker.render_pdf import render_pdf

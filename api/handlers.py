@@ -5,10 +5,11 @@ from fastapi import APIRouter, UploadFile, File
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
+from models.models import File as FileModel
+from models.session import session_manager
+
 from .utils import save_file
 from .zmq_sender import zmq_client
-from .models.models import File as FileModel
-from .models.session import session_manager
 
 api = APIRouter(prefix="/api")
 

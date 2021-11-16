@@ -1,7 +1,7 @@
 import pytest
 
 from uuid import UUID
-from api.models.models import File as FileModel
+from models.models import File as FileModel
 
 
 @pytest.mark.asyncio

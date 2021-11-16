@@ -10,8 +10,8 @@ from pdf2image.exceptions import (
     PDFSyntaxError,
 )
 
-from api.models.models import File, Image
-from api.models.session import session_maker
+from models.models import File, Image
+from models.session import session_maker
 
 from . import settings
 
