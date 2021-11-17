@@ -1,5 +1,5 @@
 import asyncio
-from tasks.render_pdf import start_zmq_client
+from worker.render_pdf import start_zmq_client
 
 
 if __name__ == "__main__":
