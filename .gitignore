@@ -1,5 +1,5 @@
-files
-images
+files/*.pdf
+images/*.png
 
 # guinicorn
 accesslog
